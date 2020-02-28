@@ -1,0 +1,38 @@
+{
+  "name": "svelte-template",
+  "version": "1.0.0",
+  "description": "An example project implementing Svelte Material UI with Rollup.",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "rollup -c rollup.config.js",
+    "serve": "serve .",
+    "watch": "rollup -c rollup.config.js --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Hunter Perrin <hperrin@gmail.com>",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@material/typography": "^3.1.0",
+    "@smui/button": "^1.0.0-beta.20",
+    "@smui/top-app-bar": "^1.0.0-beta.20",
+    "rollup": "^1.30.1",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-postcss": "^2.0.5",
+    "rollup-plugin-svelte": "^5.1.1",
+    "serve": "^11.3.0",
+    "svelte": "^3.18.1"
+  },
+  "dependencies": {
+    "@smui/card": "^1.0.0-beta.20",
+    "@smui/drawer": "^1.0.0-beta.20",
+    "@smui/icon-button": "^1.0.0-beta.20",
+    "@smui/list": "^1.0.0-beta.20",
+    "@smui/paper": "^1.0.0-beta.20",
+    "@smui/tab": "^1.0.0-beta.20",
+    "@smui/tab-bar": "^1.0.0-beta.20",
+    "axios": "^0.19.2",
+    "node-sass": "^4.13.1",
+    "svelte-spa-router": "^2.0.0"
+  }
+}
