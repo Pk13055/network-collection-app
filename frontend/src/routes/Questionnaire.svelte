@@ -4,7 +4,8 @@
   import IconButton, { Icon } from "@smui/icon-button";
 
   onMount(async () => {
-    //   TODO: populate the description and question link
+    await console.log(params);
+    await getInfo();
   });
   let icons = {
     intra: "potrait",

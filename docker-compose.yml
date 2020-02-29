@@ -43,7 +43,10 @@ services:
                         - web_network # for web API
 
         frontend:
-                build: ./frontend
+                build:
+                        context: ./frontend
+                        args:
+                            DEBUG: $DEBUG   
                 entrypoint: ./entrypoint.sh
                 restart: unless-stopped
                 environment:

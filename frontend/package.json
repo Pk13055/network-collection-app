@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "build": "rollup -c rollup.config.js",
-    "serve": "serve .",
+    "serve": "npx rollup -c && serve .",
     "watch": "rollup -c rollup.config.js --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -33,6 +33,9 @@
     "@smui/tab-bar": "^1.0.0-beta.20",
     "axios": "^0.19.2",
     "node-sass": "^4.13.1",
+    "rollup-plugin-conditional": "^3.1.2",
+    "rollup-plugin-serve": "^1.0.1",
+    "rollup-plugin-uglify": "^6.0.4",
     "svelte-spa-router": "^2.0.0"
   }
 }

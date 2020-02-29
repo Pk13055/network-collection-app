@@ -2,6 +2,11 @@ import svelte from 'rollup-plugin-svelte';
 import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
 import postcss from 'rollup-plugin-postcss';
+import serve from 'rollup-plugin-serve';
+import uglify from 'rollup-plugin-uglify';
+import conditional from 'rollup-plugin-conditional';
+
+const isDEBUG = process.env.DEBUG;
 
 module.exports = {
   input: 'src/index.js',
@@ -21,7 +26,7 @@ module.exports = {
     commonjs(),
     postcss({
       extract: true,
-      minimize: true,
+      minimize: isDEBUG,
       use: [
         ['sass', {
           includePaths: [
@@ -30,9 +35,23 @@ module.exports = {
           ]
         }]
       ]
-    })
+    }),
+    ...isDEBUG ? [
+      conditional(isDEBUG, () => [
+        serve({
+          openPage: '/about',
+          verbose: true,
+          contentBase: '.',
+          host: '0.0.0.0',
+          port: 5000
+        })
+      ])
+    ] : [
+        uglify()
+      ]
+
   ],
   watch: {
-    clearScreen: true
+    clearScreen: !isDEBUG
   }
 };
