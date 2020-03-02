@@ -9,7 +9,6 @@ import Regex from './routes/Regex.svelte'
 import Questions from './routes/Questions.svelte'
 import Questionnaire from './routes/Questionnaire.svelte'
 import NotFound from './routes/NotFound.svelte'
-import SSQ6 from './routes/SSQ6.svelte'
 
 // This demonstrates how to pass routes as a POJO (Plain Old JavaScript Object) or a JS Map
 let routes = new Map()
@@ -19,7 +18,6 @@ routes.set('/', Home)
 routes.set('/renumeration', Renumeration)
 routes.set('/privacy', Privacy)
 routes.set('/questions', Questions)
-routes.set('/questions/inter/ssq6', SSQ6)
 routes.set('/questions/:type/:name', Questionnaire)
 
 // Regular expressions

@@ -132,7 +132,7 @@
       </Item>
       <Item
         href="javascript:void(0)"
-        on:SMUI:action={() => switchPage('/questions/intra/20idip')}>
+        on:SMUI:action={() => switchPage('/questions/intra/idip20')}>
         <Graphic class="material-icons" aria-hidden="true">post_add</Graphic>
         <Text>
           20-IDIP

@@ -1,5 +1,6 @@
 <script>
   import Paper, { Title, Subtitle, Content } from "@smui/paper";
+  import { link } from "svelte-spa-router";
   import { fade } from "svelte/transition";
   export const title = "Introduction";
 </script>
@@ -16,12 +17,16 @@
         This research aims to understand .. how depression trends exist in
         social networks. A network can be modeled simply as a collection of
         weighted nodes and directed edges. We plan to collect invasive,
-        anonymous (see data privacy section) information through a set of
-        questionnaires to model social structure. This anonymous network will
-        then be subjected to trend analysis and modeling. Given that time is
-        sparse and everyone has a lot on their plate, any valid participation in
-        the study will be renumerated (link remuneration section).
+        anonymous (see
+        <a use:link href="/privacy">data privacy</a>
+        ) information through a set of questionnaires to model social structure.
+        This anonymous network will then be subjected to trend analysis and
+        modeling. Given that time is sparse and everyone has a lot on their
+        plate, any valid participation in the study will be
+        <a use:link href="/renumeration">renumerated</a>
+        .
       </p>
+      <p />
     </Content>
   </Paper>
 </div>

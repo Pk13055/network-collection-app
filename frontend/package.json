@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@smui/card": "^1.0.0-beta.20",
+    "@smui/chips": "^1.0.0-beta.20",
     "@smui/drawer": "^1.0.0-beta.20",
     "@smui/icon-button": "^1.0.0-beta.20",
     "@smui/list": "^1.0.0-beta.20",
@@ -32,6 +33,7 @@
     "@smui/tab": "^1.0.0-beta.20",
     "@smui/tab-bar": "^1.0.0-beta.20",
     "axios": "^0.19.2",
+    "marked": "^0.8.0",
     "node-sass": "^4.13.1",
     "rollup-plugin-conditional": "^3.1.2",
     "rollup-plugin-serve": "^1.0.1",
