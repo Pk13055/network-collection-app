@@ -3,7 +3,6 @@ import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
 import postcss from 'rollup-plugin-postcss';
 import serve from 'rollup-plugin-serve';
-import uglify from 'rollup-plugin-uglify';
 import conditional from 'rollup-plugin-conditional';
 
 const isDEBUG = process.env.DEBUG;

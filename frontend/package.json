@@ -26,10 +26,12 @@
   "dependencies": {
     "@smui/card": "^1.0.0-beta.20",
     "@smui/chips": "^1.0.0-beta.20",
+    "@smui/data-table": "^1.0.0-beta.20",
     "@smui/drawer": "^1.0.0-beta.20",
     "@smui/icon-button": "^1.0.0-beta.20",
     "@smui/list": "^1.0.0-beta.20",
     "@smui/paper": "^1.0.0-beta.20",
+    "@smui/slider": "^1.0.0-beta.20",
     "@smui/tab": "^1.0.0-beta.20",
     "@smui/tab-bar": "^1.0.0-beta.20",
     "axios": "^0.19.2",

@@ -5,9 +5,6 @@
   export const title = "Introduction";
 </script>
 
-<svelte:head>
-  <title>{title}</title>
-</svelte:head>
 
 <div class="container" in:fade={{ duration: 300 }}>
   <Paper color={'primary'} elevation={10}>

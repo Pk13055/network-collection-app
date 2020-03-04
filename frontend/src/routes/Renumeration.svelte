@@ -2,6 +2,8 @@
   import { link } from "svelte-spa-router";
   import Paper, { Title, Subtitle, Content } from "@smui/paper";
   import { fade } from "svelte/transition";
+
+  export const title = "Renumeration";
 </script>
 
 <div class="card-container long" in:fade={{ duration: 500 }}>

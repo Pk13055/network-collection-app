@@ -22,7 +22,10 @@
 
   $: document.title = `${params.type}personal - ${params.name}`;
 
-  let __type, __id, icon, content;
+  let __type,
+    __id,
+    icon,
+    content = `<div class="mdc-typography--headline2">Loading content ...</div>`;
 
   onMount(async () => {
     await fetch(`https://api.github.com/gists/d1c4dc0a76d3c844ff00cb57d9bc5b33`)
@@ -34,13 +37,11 @@
         content = md.render(__content[`${__id}.md`].content);
       })
       .catch(err => console.log(err));
-    content = "";
   });
 
   $: (__type = params.type), (__id = params.name), (icon = icons[__type]);
 
   afterUpdate(() => {
-    console.log(params);
     if (__content) content = md.render(__content[`${__id}.md`].content);
   });
 </script>

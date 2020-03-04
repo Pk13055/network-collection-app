@@ -24,8 +24,11 @@
   import active from "svelte-spa-router/active";
   import routes from "./routes";
   import Button, { Label, Icon } from "@smui/button";
+
+  export let title = "Introduction";
+  $: document.title = title;
+
   let navDrawer; // navigation drawer object
-  let title = "Homepage";
   let drawerOpen = false;
   let switchPage = url => {
     drawerOpen = !drawerOpen;
@@ -38,10 +41,6 @@
     color: black;
   }
 </style>
-
-<svelte:head>
-  <title>{title}</title>
-</svelte:head>
 
 <!-- Top bar for title -->
 <TopAppBar variant="static" style="background-color: black;">
@@ -166,5 +165,5 @@
   <Router
     {routes}
     on:conditionsFailed={event => console.log(`Condition failed ${JSON.stringify(event.detail)}`)}
-    on:routeLoaded={event => console.log(`Route loaded ${JSON.stringify(event.detail)}`)} />
+    on:routeLoaded={() => {}} />
 </div>
