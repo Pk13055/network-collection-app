@@ -1,24 +1,93 @@
 <script>
-  import Intra from "./Intra.svelte";
-  import Inter from "./Inter.svelte";
   import Button, { Label } from "@smui/button";
+  import { onMount } from "svelte";
   import Tab, { Icon } from "@smui/tab";
   import TabBar from "@smui/tab-bar";
+  import { push } from "svelte-spa-router";
+  import Paper, { Title, Subtitle, Content } from "@smui/paper";
+  import Chip from "@smui/chips";
+  import List, { Text, PrimaryText, SecondaryText, Item } from "@smui/list";
+  import { fade } from "svelte/transition";
   let keyedTabs = [
       {
         k: 1,
         icon: "portrait",
         label: "Intrapersonal",
-        component: Intra
+        type: "intra",
+        n: 43,
+        questions: [
+          {
+            name: "HUMS",
+            id: "hums",
+            disabled: false,
+            optional: false,
+            n: 13,
+            caption:
+              "Derive healthy unhealthy music score given basic musical preference information."
+          },
+          {
+            name: "K10 Correlation",
+            id: "k10",
+            disabled: false,
+            optional: false,
+            n: 10,
+            caption: "K10 correlation scores calculated using certain metrics."
+          },
+          {
+            name: "IDIP (20 version)",
+            id: "idip20",
+            disabled: false,
+            optional: true,
+            n: 20,
+            caption:
+              "Shorter, 20 question version of the IDIP standardised test"
+          }
+        ],
+        info: `Intrapersonal questionnaires are responsible for adding intrinsic value to
+      each node. The questionnaires are quantized into various metrics
+      (mentioned below) and used to assign a score vector to each node, an
+      embedding, of sorts.`
       },
       {
         k: 2,
         icon: "transfer_within_a_station",
         label: "Interpersonal",
-        component: Inter
+        type: "inter",
+        n: 16,
+        questions: [
+          {
+            name: "Social Support (6)",
+            id: "ssq6",
+            disabled: false,
+            optional: false,
+            n: 6,
+            caption: "The actual network analysis question"
+          },
+          {
+            name: "Social Support (12)",
+            id: "ssq12",
+            disabled: false,
+            optional: true,
+            n: 12,
+            caption: "Additional 12-point generic social support questionnaire"
+          }
+        ],
+        info: `The interpersonal questionnaire is responsible for modeling edges in a
+      directed, weighted fashion. Think of it like node ABC having filled
+      Question 3 choosing node PQR as option C (refer to the intrapersonal
+      section for more information).`
       }
     ],
-    keyedTabsActive = keyedTabs[0];
+    selectedIdx = 0,
+    keyedTabsActive,
+    __type,
+    quizzes,
+    quiz;
+
+  keyedTabsActive = keyedTabs[0];
+  $: (__type = keyedTabsActive.type),
+    (quizzes = keyedTabsActive.questions),
+    (quiz = quizzes[selectedIdx]);
 </script>
 
 <div class="container">
@@ -47,7 +116,43 @@
       <Label>{tab.label}</Label>
     </Tab>
   </TabBar>
-  <div class="container">
-    <svelte:component this={keyedTabsActive.component} />
+  <div class="card-container long" in:fade={{ duration: 600 }}>
+    <Paper color={'default'} elevation={10}>
+      <Title>{keyedTabsActive.label} Questionnaires</Title>
+      <Content>
+        {keyedTabsActive.info}
+        <List
+          color={'primary'}
+          threeLine
+          singleSelection
+          bind:selectedIndex={selectedIdx}>
+          {#each keyedTabsActive.questions as item}
+            <Item
+              on:SMUI:action={() => push(`/questions/${__type}/${item.id}`)}
+              disabled={item.disabled}
+              selected={quiz === item}>
+              <Text>
+                <PrimaryText>
+                  {item.name}
+                  {#if item.optional}
+                    <Chip>
+                      <Icon class="material-icons" leading>info</Icon>
+                      Optional
+                    </Chip>
+                  {/if}
+                </PrimaryText>
+                <SecondaryText>
+                  <em>
+                    <strong>{item.n}</strong>
+                    questions
+                  </em>
+                </SecondaryText>
+                <SecondaryText>{item.caption}</SecondaryText>
+              </Text>
+            </Item>
+          {/each}
+        </List>
+      </Content>
+    </Paper>
   </div>
 </div>

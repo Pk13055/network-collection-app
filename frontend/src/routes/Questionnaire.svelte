@@ -34,6 +34,7 @@
         content = md.render(__content[`${__id}.md`].content);
       })
       .catch(err => console.log(err));
+    content = "";
   });
 
   $: (__type = params.type), (__id = params.name), (icon = icons[__type]);
@@ -61,7 +62,7 @@
       {@html content}
     </Content>
     <Actions fullBleed>
-      <Button on:click={() => push(`/questions/${__type}/${__id}/attempt`)}>
+      <Button on:click={() => push(`/attempt/${__type}/${__id}`)}>
         <Label>Attempt Questionnaire!</Label>
         <i class="material-icons" aria-hidden="true">arrow_forward</i>
       </Button>
