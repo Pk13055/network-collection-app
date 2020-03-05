@@ -1,11 +1,13 @@
 <script>
   export let params = {};
   import { onMount, afterUpdate } from "svelte";
+  import { fade } from "svelte/transition";
   import Card, { Content, Actions } from "@smui/card";
   import IconButton, { Icon } from "@smui/icon-button";
   import Chip from "@smui/chips";
   import Button, { Label } from "@smui/button";
   import Slider from "@smui/slider";
+  import axios from "axios";
 
   let selected = {},
     questions = new Array(),
@@ -45,32 +47,28 @@
     }
   };
 
-  onMount(() => {
-    // TODO replace all with fetch of content from backend
+  onMount(async () => {
+    // TODO: add fetch questionnaire from API
     [
       {
         k: 1,
         name: "Broom",
-        description: "A wooden handled broom.",
-        price: 15
+        description: "What is your biggest fear?"
       },
       {
         k: 2,
         name: "Dust Pan",
-        description: "A plastic dust pan.",
-        price: 8
+        description: "A plastic dust pan."
       },
       {
         k: 3,
         name: "Mop",
-        description: "A strong, durable mop.",
-        price: 18
+        description: "A strong, durable mop."
       },
       {
         k: 4,
         name: "Bucket",
-        description: "A metal bucket.",
-        price: 13
+        description: "A metal bucket."
       }
     ].forEach(question => questions.push(question));
     [
@@ -101,7 +99,9 @@
     ].forEach(option => options.push(option));
     // TODO: map to last logged in state
     questions.map(question => (selected[question.k] = 1));
+
     prevSelected = flattenState(selected);
+
     return async () => {
       let shouldSave = !stateSaved
         ? confirm(
@@ -114,9 +114,7 @@
 
   afterUpdate(() => {
     let currentSelected = flattenState(selected);
-    if (JSON.stringify(prevSelected) == JSON.stringify(currentSelected))
-      console.log("Same");
-    else {
+    if (JSON.stringify(prevSelected) !== JSON.stringify(currentSelected)) {
       console.log(`Current selected: ${JSON.stringify(currentSelected)}`);
       prevSelected = currentSelected;
       stateSaved = false;
@@ -127,7 +125,6 @@
     let currentSelected = flattenState(selected);
     if (JSON.stringify(prevSelected) != JSON.stringify(currentSelected)) {
       // TODO: update the audit log
-      console.log(`Save state ${currentSelected}`);
       prevSelected = currentSelected;
       stateSaved = true;
     }
@@ -150,7 +147,7 @@
       <Icon class="material-icons">turned_in_not</Icon>
     </IconButton>
     <Chip leading>{params.type}</Chip>
-    {params.name}
+    {params.name} Questionnaire
     <IconButton
       class="material-icons"
       on:click={() => {
@@ -159,6 +156,13 @@
       rotate_right
     </IconButton>
   </h2>
+  <p class="mdc-typography--caption">
+    <span style="color: {stateSaved ? 'green' : 'red'}">
+      {#if stateSaved}
+        All changes have been saved successfully!
+      {:else}Unsaved Changes (click the bookmark above to save){/if}
+    </span>
+  </p>
 </div>
 {#each questions as question}
   <div class="container">
@@ -192,4 +196,3 @@
     </Card>
   </div>
 {/each}
-<div class="container" />

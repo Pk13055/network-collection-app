@@ -50,7 +50,7 @@
   <title>{params.type}personal - {params.name}</title>
 </svelte:head>
 
-<div class="card-container">
+<div class="card-container" in:fade={{ duration: 200 }}>
   <Card elevation={10}>
     <Content>
       <h2 class="mdc-typography--headline2">

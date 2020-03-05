@@ -2,6 +2,7 @@
   // Import the router component
   import Router from "svelte-spa-router";
   import A from "@smui/common/A.svelte";
+  import Chip, { Icon } from "@smui/chips";
   import TopAppBar, { Row, Section, Title } from "@smui/top-app-bar";
   import IconButton from "@smui/icon-button";
   import Drawer, {
@@ -23,7 +24,7 @@
   } from "svelte-spa-router";
   import active from "svelte-spa-router/active";
   import routes from "./routes";
-  import Button, { Label, Icon } from "@smui/button";
+  import Button, { Label } from "@smui/button";
 
   export let title = "Introduction";
   $: document.title = title;
@@ -135,7 +136,10 @@
         <Graphic class="material-icons" aria-hidden="true">post_add</Graphic>
         <Text>
           20-IDIP
-          <em>(Optional)</em>
+          <Chip>
+            <Icon class="material-icons" leading>info</Icon>
+            Optional
+          </Chip>
         </Text>
       </Item>
     </List>
@@ -154,7 +158,10 @@
         <Graphic class="material-icons" aria-hidden="true">post_add</Graphic>
         <Text>
           SSQ-12
-          <em>(Optional)</em>
+          <Chip>
+            <Icon class="material-icons" leading>info</Icon>
+            Optional
+          </Chip>
         </Text>
       </Item>
     </List>
