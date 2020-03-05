@@ -48,67 +48,26 @@
   };
 
   onMount(async () => {
-    // TODO: add fetch questionnaire from API
-    [
-      {
-        k: 1,
-        name: "Broom",
-        description: "What is your biggest fear?"
-      },
-      {
-        k: 2,
-        name: "Dust Pan",
-        description: "A plastic dust pan."
-      },
-      {
-        k: 3,
-        name: "Mop",
-        description: "A strong, durable mop."
-      },
-      {
-        k: 4,
-        name: "Bucket",
-        description: "A metal bucket."
-      }
-    ].forEach(question => questions.push(question));
-    [
-      {
-        k: 1,
-        label: "Unattempted"
-      },
-      {
-        k: 2,
-        label: "Very unlikely"
-      },
-      {
-        k: 3,
-        label: "Unlikely"
-      },
-      {
-        k: 4,
-        label: "Neutral"
-      },
-      {
-        k: 5,
-        label: "Likely"
-      },
-      {
-        k: 6,
-        label: "Very Likely"
-      }
-    ].forEach(option => options.push(option));
-    // TODO: map to last logged in state
-    questions.map(question => (selected[question.k] = 1));
+    await fetch(`/api/core/questions/${params.name}`)
+      .then(results => {
+        return results.json();
+      })
+      .then(questionnaire => {
+        if (questionnaire.errors) alert("Invalid Questionnaire!");
+        questionnaire.questions.forEach(question => questions.push(question));
+        questionnaire.options.forEach(option => options.push(option));
+        // TODO: fetch selected from audit map
+        questions.map(question => (selected[question.k] = 1));
+        prevSelected = flattenState(selected);
+      });
 
-    prevSelected = flattenState(selected);
-
-    return async () => {
+    return () => {
       let shouldSave = !stateSaved
         ? confirm(
             "You have unsaved answers. Do you want to save them before exiting?"
           )
         : false;
-      if (shouldSave) await saveState();
+      if (shouldSave) saveState();
     };
   });
 
@@ -165,7 +124,7 @@
   </p>
 </div>
 {#each questions as question}
-  <div class="container">
+  <div class="container" in:fade={{ duration: 400 }}>
     <Card elevation={20} color={'secondary'}>
       <Content>
         <span class="mdc-typography--subtitle">{question.description}</span>

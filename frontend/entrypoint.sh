@@ -6,8 +6,8 @@ if [ -z "$DEBUG" ]; then
     exit 1
 fi  
 
-if [ "$DEBUG" = true ] ; then
-    npm run-script watch
+if [ "$DEBUG" = 1 ] ; then
+    npm run-script dev
 else
-    npm run-script serve
+    npm run-script build && serve .
 fi
