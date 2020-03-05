@@ -1,8 +1,9 @@
 FROM python:3.7-alpine
-LABEL author=pk13055 version=1.0
+LABEL author=pk13055 version=1.5
 
 RUN pip3 install pip-tools \
  && apk add --update build-base \ 
+ libxml2-dev libxslt-dev \
  && rm -rf /var/cache/apk/*
 
 WORKDIR /app

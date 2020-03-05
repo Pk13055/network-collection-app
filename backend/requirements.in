@@ -7,3 +7,5 @@ motor
 fastapi
 aiofiles
 fastapi_contrib[ujson,mongo,pytz]
+
+python-cas
