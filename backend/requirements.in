@@ -8,4 +8,6 @@ fastapi
 aiofiles
 fastapi_contrib[ujson,mongo,pytz]
 
+# authentication
 python-cas
+pyjwt

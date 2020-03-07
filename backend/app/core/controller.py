@@ -1,32 +1,21 @@
+import hashlib
 import logging
 import random
 
 from cas import CASClient
 from fastapi import APIRouter, Depends, HTTPException
+import jwt
 from motor.motor_asyncio import AsyncIOMotorClient
 from starlette.responses import RedirectResponse
+import ujson
 
 from app.utils.cas import get_cas
 from app.utils.mongodb import get_database
 from app.models.user import UserInResponse
 from app.models.questionnaire import QuestionnaireInResponse
-
+from config import SECRET_KEY
 
 router = APIRouter()
-
-
-@router.get("/", response_model=UserInResponse, tags=["users"])
-async def get_all_users(db: AsyncIOMotorClient = Depends(get_database)) -> UserInResponse:
-    """
-    Get a list of users in the database
-
-    Each item will have a set of params
-    """
-    users = []
-    rows = db["core"]["users"].find()
-    async for row in rows:
-        users.append(row)
-    return UserInResponse(users=users)
 
 
 @router.get("/login", tags=["auth"])
@@ -38,27 +27,43 @@ async def login_route(next: str = "/", ticket: str = None, cas_client: CASClient
         # No ticket, the request come from end user, send to CAS login
         cas_login_url = cas_client.get_login_url()
         logging.debug(f"CAS Login URL {cas_login_url}")
-        return RedirectResponse(cas_login_url)
+        return RedirectResponse(url=cas_login_url)
 
-    # There is a ticket, the request come from CAS as callback.
-    # need call `verify_ticket()` to validate ticket and get user profile.
-    logging.debug(f"Ticket {ticket}")
-    logging.debug(f'next {next}')
-
-    user, attributes, pgtiou = cas_client.verify_ticket(ticket)
-    logging.debug(
-        f"CAS verify ticket response: user: {user}, attributes: {attributes}, pgtiou: {pgtiou}")
-
-    if not user:
-        return 'Failed to verify ticket. <a href="/login">Login</a>'
+    _user, attributes, _ = cas_client.verify_ticket(ticket)
+    if not _user:
+        return {
+            "success": False,
+            "message": "Invalid user! Retry logging in!"
+        }
     else:
-        # Login successfully, redirect according `next` query parameter.
-        # session['username'] = user
-        return RedirectResponse(url=next)
+        logging.debug(f"CAS verify ticket response: user: {_user}")
+        username = hashlib.sha256(
+            f"{attributes['RollNo']}_{attributes['Name']}::{_user}".encode()).hexdigest()
+
+        existing = await db["core"]["users"].find_one({"username": username})
+        if existing:
+            await db["core"]["users"].update_one({"username": username}, {"$set": {"last_login": attributes["authenticationDate"]}})
+        else:
+            _res = await db["core"]["users"].insert_one({
+                "username": username,
+                "last_login": attributes["authenticationDate"],
+                "first_login": attributes["authenticationDate"]
+            })
+        jwt_token = jwt.encode({'username': username},
+                               str(SECRET_KEY), algorithm="HS256").decode()
+        user_response = {
+            "success": True,
+            "data": {
+                "username": username,
+                "token": jwt_token
+            }
+        }
+        redirect_url = f"{next}#/?user={user_response}"
+        return RedirectResponse(url=redirect_url)
 
 
 @router.get("/questions/{questions_id}", response_model=QuestionnaireInResponse, tags=["questions"])
-async def get_questionnaire(questions_id: str, db: AsyncIOMotorClient = Depends(get_database)) -> QuestionnaireInResponse:
+async def get_questionnaire(request, questions_id: str, db: AsyncIOMotorClient = Depends(get_database)) -> QuestionnaireInResponse:
     """
     Retrieve questionnaire given the id
 
