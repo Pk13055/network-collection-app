@@ -28,6 +28,7 @@ services:
 
         backend:
                 build: ./backend
+                command: --log-level debug
                 restart: always
                 volumes:
                         - ./backend:/app
@@ -53,7 +54,7 @@ services:
                     NODE_ENV: development  # OR [production]
                 volumes:
                         - web-root:/home/node/app/dist
-                        - ./frontend:/home/node/app/
+                        - ./frontend:/home/node/app
                         - /home/node/app/node_modules
                 environment:
                         PORT: 5000
@@ -71,6 +72,7 @@ services:
                         - web-root:/var/www/html
                         - ./config/nginx:/etc/nginx/conf.d/
                 depends_on:
+                        - frontend
                         - backend
                         - db-interface
                 networks:
