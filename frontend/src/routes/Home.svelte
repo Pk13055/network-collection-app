@@ -5,7 +5,6 @@
   export const title = "Introduction";
 </script>
 
-
 <div class="container" in:fade={{ duration: 300 }}>
   <Paper color={'primary'} elevation={10}>
     <Title>Introduction</Title>
@@ -38,7 +37,6 @@
       The team behind this research consists of
       <ul>
         <li>Dr. Vinoo Alluri</li>
-        <li>Dr. Nimmi Rangaswammy</li>
         <li>Dr. Praveen Parchuri</li>
         <li>Pratik Kamble</li>
         <li>Saumya Srivastava</li>

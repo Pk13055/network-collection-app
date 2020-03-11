@@ -11,6 +11,7 @@
 
 <script>
   export let params = {};
+  import { user } from "../stores.js";
   import { onMount, afterUpdate } from "svelte";
   import Chip from "@smui/chips";
   import Card, { Content, Actions } from "@smui/card";
@@ -60,10 +61,14 @@
           {__type}
         </Chip>
       </h2>
-      {@html content}
+      <div class="mdc-typography--body1">
+        {@html content}
+      </div>
     </Content>
     <Actions fullBleed>
-      <Button on:click={() => push(`/attempt/${__type}/${__id}`)}>
+      <Button
+        on:click={() => push(`/attempt/${__type}/${__id}`)}
+        disabled={$user.success}>
         <Label>Attempt Questionnaire!</Label>
         <i class="material-icons" aria-hidden="true">arrow_forward</i>
       </Button>

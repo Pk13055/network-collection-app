@@ -1,6 +1,7 @@
 <script>
   export let params = {};
-  import { onMount, afterUpdate } from "svelte";
+  import { replace } from "svelte-spa-router";
+  import { onMount, onDestroy, afterUpdate, getContext } from "svelte";
   import { fade } from "svelte/transition";
   import Card, { Content, Actions } from "@smui/card";
   import IconButton, { Icon } from "@smui/icon-button";
@@ -8,6 +9,9 @@
   import Button, { Label } from "@smui/button";
   import Slider from "@smui/slider";
   import axios from "axios";
+
+  let logged_in = getContext("logged_in");
+  const user = logged_in ? getContext("user") : undefined;
 
   let selected = {},
     questions = new Array(),
@@ -46,29 +50,35 @@
       n: 2
     }
   };
-
+  let __quiz_type, __quiz_name;
   onMount(async () => {
     await fetch(`/api/core/questions/${params.name}`)
       .then(results => {
         return results.json();
       })
       .then(questionnaire => {
-        if (questionnaire.errors) alert("Invalid Questionnaire!");
+        console.log(questionnaire);
+        if (questionnaire.errors) {
+          alert("Invalid Questionnaire!");
+          replace("/");
+        }
+        __quiz_name = questionnaire.title;
+        __quiz_type = questionnaire.type;
         questionnaire.questions.forEach(question => questions.push(question));
         questionnaire.options.forEach(option => options.push(option));
         // TODO: fetch selected from audit map
         questions.map(question => (selected[question.k] = 1));
         prevSelected = flattenState(selected);
       });
+  });
 
-    return () => {
-      let shouldSave = !stateSaved
-        ? confirm(
-            "You have unsaved answers. Do you want to save them before exiting?"
-          )
-        : false;
-      if (shouldSave) saveState();
-    };
+  onDestroy(async () => {
+    let shouldSave = !stateSaved
+      ? confirm(
+          "You have unsaved answers. Do you want to save them before exiting?"
+        )
+      : false;
+    if (shouldSave) await saveState();
   });
 
   afterUpdate(() => {
@@ -105,8 +115,8 @@
       <Icon class="material-icons" on>turned_in</Icon>
       <Icon class="material-icons">turned_in_not</Icon>
     </IconButton>
-    <Chip leading>{params.type}</Chip>
-    {params.name} Questionnaire
+    <Chip leading>{__quiz_type}</Chip>
+    {__quiz_name}
     <IconButton
       class="material-icons"
       on:click={() => {

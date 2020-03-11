@@ -1,6 +1,15 @@
 <script>
   // Import the router component
-  import Router from "svelte-spa-router";
+  import { user } from "./stores.js";
+  import { setContext, getContext } from "svelte";
+  import Router, {
+    link,
+    push,
+    pop,
+    replace,
+    location,
+    querystring
+  } from "svelte-spa-router";
   import A from "@smui/common/A.svelte";
   import Chip, { Icon } from "@smui/chips";
   import TopAppBar, { Row, Section, Title } from "@smui/top-app-bar";
@@ -14,17 +23,10 @@
   } from "@smui/drawer";
   import List, { Item, Text, Graphic, Separator, Subheader } from "@smui/list";
   import H4 from "@smui/common/H4.svelte";
-  import {
-    link,
-    push,
-    pop,
-    replace,
-    location,
-    querystring
-  } from "svelte-spa-router";
   import active from "svelte-spa-router/active";
   import routes from "./routes";
   import Button, { Label } from "@smui/button";
+  import { parse } from "qs";
 
   export let title = "Introduction";
   $: document.title = title;
@@ -35,6 +37,18 @@
     drawerOpen = !drawerOpen;
     push(url);
   };
+  let logged_in;
+  let parsed = parse($querystring, { depth: 3 });
+  console.log(parsed.user && parsed.user.success);
+  if (parsed.user && parsed.user.success) {
+    console.log("Successful login!");
+    $user = parsed.user;
+    replace("/");
+  }
+  user.subscribe(resp => {
+    logged_in = resp.success;
+    console.log(logged_in);
+  });
 </script>
 
 <style>
@@ -54,14 +68,14 @@
       </IconButton>
     </Section>
     <Section align="center">
-      <Title component={A} on:click={() => replace('/')} class="">
-        Social Network App
-      </Title>
+      <Title component={A} on:click={() => push('/')}>Social Network App</Title>
     </Section>
     <Section align="end" toolbar>
-      <IconButton class="material-icons" on:click={() => replace('/api/login')}>
-        fingerprint
-      </IconButton>
+      <Button
+        href={!logged_in ? '/api/core/login' : 'https://login.iiit.ac.in/cas/logout'}>
+        {!logged_in ? 'Login' : 'Logout'}
+        <Icon class="material-icons" trailing>fingerprint</Icon>
+      </Button>
     </Section>
   </Row>
 </TopAppBar>
@@ -154,10 +168,10 @@
       </Item>
       <Item
         href="javascript:void(0)"
-        on:SMUI:action={() => switchPage('/questions/inter/ssq12')}>
+        on:SMUI:action={() => switchPage('/questions/inter/mspss')}>
         <Graphic class="material-icons" aria-hidden="true">post_add</Graphic>
         <Text>
-          SSQ-12
+          MSPSS
           <Chip>
             <Icon class="material-icons" leading>info</Icon>
             Optional

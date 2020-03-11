@@ -32,7 +32,7 @@ async def login_route(next: str = "/", ticket: str = None, cas_client: CASClient
     _user, attributes, _ = cas_client.verify_ticket(ticket)
     if not _user:
         return {
-            "success": False,
+            "success": 0,
             "message": "Invalid user! Retry logging in!"
         }
     else:
@@ -52,7 +52,7 @@ async def login_route(next: str = "/", ticket: str = None, cas_client: CASClient
         jwt_token = jwt.encode({'username': username},
                                str(SECRET_KEY), algorithm="HS256").decode()
         user_response = {
-            "success": True,
+            "success": 1,
             "data": {
                 "username": username,
                 "token": jwt_token
@@ -63,10 +63,13 @@ async def login_route(next: str = "/", ticket: str = None, cas_client: CASClient
 
 
 @router.get("/questions/{questions_id}", response_model=QuestionnaireInResponse, tags=["questions"])
-async def get_questionnaire(request, questions_id: str, db: AsyncIOMotorClient = Depends(get_database)) -> QuestionnaireInResponse:
+async def get_questionnaire(questions_id: str, db: AsyncIOMotorClient = Depends(get_database)) -> QuestionnaireInResponse:
     """
-    Retrieve questionnaire given the id
+    Retrieve questionnaire given the `question_id`
 
+    :param questions_id: str -> ID of the questionnaire, eg: "hums"
+    :param db: [AsyncIOMotorClient] -> async db connector
+    :returns questionnaire: QuestionnaireInResponse -> relevant questionnaire
 
     """
     questionnaire = await db["core"]["questions"].find_one(

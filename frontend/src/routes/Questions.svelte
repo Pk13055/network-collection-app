@@ -22,11 +22,10 @@
             disabled: false,
             optional: false,
             n: 13,
-            caption:
-              "Derive healthy unhealthy music score given basic musical preference information."
+            caption: "Healthy Unhealthy Music Scale"
           },
           {
-            name: "K10 Correlation",
+            name: "K-10",
             id: "k10",
             disabled: false,
             optional: false,
@@ -34,13 +33,12 @@
             caption: "K10 correlation scores calculated using certain metrics."
           },
           {
-            name: "IDIP (20 version)",
+            name: "20-IDIP",
             id: "idip20",
             disabled: false,
             optional: true,
             n: 20,
-            caption:
-              "Shorter, 20 question version of the IDIP standardised test"
+            caption: "International Personality Item Pool."
           }
         ],
         info: `Intrapersonal questionnaires are responsible for adding intrinsic value to
@@ -56,7 +54,7 @@
         n: 16,
         questions: [
           {
-            name: "Social Support (6)",
+            name: "SSQ-6",
             id: "ssq6",
             disabled: false,
             optional: false,
@@ -64,12 +62,12 @@
             caption: "The actual network analysis question"
           },
           {
-            name: "Social Support (12)",
-            id: "ssq12",
+            name: "MSPSS",
+            id: "mspss",
             disabled: false,
             optional: true,
             n: 12,
-            caption: "Additional 12-point generic social support questionnaire"
+            caption: "Multidimensional Scale of Perceived Social Support"
           }
         ],
         info: `The interpersonal questionnaire is responsible for modeling edges in a
