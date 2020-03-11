@@ -37,18 +37,20 @@
     drawerOpen = !drawerOpen;
     push(url);
   };
-  let logged_in;
-  let parsed = parse($querystring, { depth: 3 });
-  console.log(parsed.user && parsed.user.success);
-  if (parsed.user && parsed.user.success) {
-    console.log("Successful login!");
-    $user = parsed.user;
+  let logged_in = false;
+
+  let parsed = parse($querystring, { depth: 5 });
+  if (parsed.user) {
+    let __user = { ...parse(parsed.user), ...parse(parsed.data) };
+    if (__user.success) {
+      $user = parsed.user;
+      logged_in = true;
+    } else {
+      alert(__user.message);
+      logged_in = false;
+    }
     replace("/");
   }
-  user.subscribe(resp => {
-    logged_in = resp.success;
-    console.log(logged_in);
-  });
 </script>
 
 <style>

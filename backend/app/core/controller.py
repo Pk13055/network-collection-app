@@ -1,4 +1,5 @@
 import hashlib
+import urllib
 import logging
 import random
 
@@ -51,13 +52,13 @@ async def login_route(next: str = "/", ticket: str = None, cas_client: CASClient
             })
         jwt_token = jwt.encode({'username': username},
                                str(SECRET_KEY), algorithm="HS256").decode()
-        user_response = {
+        user_response = urllib.parse.urlencode({
             "success": 1,
             "data": {
                 "username": username,
                 "token": jwt_token
             }
-        }
+        })
         redirect_url = f"{next}#/?user={user_response}"
         return RedirectResponse(url=redirect_url)
 
