@@ -68,7 +68,7 @@
     <Actions fullBleed>
       <Button
         on:click={() => push(`/attempt/${__type}/${__id}`)}
-        disabled={$user.success}>
+        disabled={!$user.success}>
         <Label>Attempt Questionnaire!</Label>
         <i class="material-icons" aria-hidden="true">arrow_forward</i>
       </Button>

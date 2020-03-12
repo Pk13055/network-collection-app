@@ -43,7 +43,7 @@
   if (parsed.user) {
     let __user = { ...parse(parsed.user), ...parse(parsed.data) };
     if (__user.success) {
-      $user = parsed.user;
+      user.set(__user);
       logged_in = true;
     } else {
       alert(__user.message);
@@ -51,6 +51,9 @@
     }
     replace("/");
   }
+  user.subscribe(resp => {
+    console.log(resp);
+  });
 </script>
 
 <style>
@@ -187,6 +190,9 @@
 <div class="container">
   <Router
     {routes}
-    on:conditionsFailed={event => console.log(`Condition failed ${JSON.stringify(event.detail)}`)}
+    on:conditionsFailed={event => {
+      console.log(`Condition failed ${JSON.stringify(event.detail)}`);
+      if (event.detail.name == 'Quiz') replace('/');
+    }}
     on:routeLoaded={() => {}} />
 </div>

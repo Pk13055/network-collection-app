@@ -10,13 +10,17 @@ import Questions from './routes/Questions.svelte'
 import Questionnaire from './routes/Questionnaire.svelte'
 import Quiz from './routes/Quiz.svelte'
 import NotFound from './routes/NotFound.svelte'
+import { user } from './stores'
 
-// This demonstrates how to pass routes as a POJO (Plain Old JavaScript Object) or a JS Map
 let routes = new Map()
 
-// Exact path
 routes.set('/', Home)
-routes.set('/attempt/:type/:name', Quiz)
+routes.set('/attempt/:type/:name', wrap(Quiz,
+    (detail) => {
+        let logged_in = false;
+        user.subscribe(resp => logged_in = resp.success);
+        return logged_in;
+    }))
 routes.set('/renumeration', Renumeration)
 routes.set('/privacy', Privacy)
 routes.set('/questions', Questions)

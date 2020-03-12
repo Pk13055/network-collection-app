@@ -54,10 +54,10 @@ async def login_route(next: str = "/", ticket: str = None, cas_client: CASClient
                                str(SECRET_KEY), algorithm="HS256").decode()
         user_response = urllib.parse.urlencode({
             "success": 1,
-            "data": {
+            "data": urllib.parse.urlencode({
                 "username": username,
                 "token": jwt_token
-            }
+            })
         })
         redirect_url = f"{next}#/?user={user_response}"
         return RedirectResponse(url=redirect_url)

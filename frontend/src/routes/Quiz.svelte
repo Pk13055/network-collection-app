@@ -9,9 +9,7 @@
   import Button, { Label } from "@smui/button";
   import Slider from "@smui/slider";
   import axios from "axios";
-
-  let logged_in = getContext("logged_in");
-  const user = logged_in ? getContext("user") : undefined;
+  import { user } from "../stores.js";
 
   let selected = {},
     questions = new Array(),
@@ -57,7 +55,6 @@
         return results.json();
       })
       .then(questionnaire => {
-        console.log(questionnaire);
         if (questionnaire.errors) {
           alert("Invalid Questionnaire!");
           replace("/");
