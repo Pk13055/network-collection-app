@@ -48,17 +48,25 @@
       n: 2
     }
   };
-  let __quiz_type, __quiz_name;
+  let __quiz_type = "intra",
+    __quiz_name = "Loading Quiz ...",
+    successfullyLoaded = false;
   onMount(async () => {
-    await fetch(`/api/core/questions/${params.name}`)
+    await fetch(`/api/core/questions/${params.name}`, {
+      headers: {
+        Authorization: $user.token
+      }
+    })
       .then(results => {
         return results.json();
       })
       .then(questionnaire => {
+        console.log(questionnaire);
         if (questionnaire.errors) {
           alert("Invalid Questionnaire!");
           replace("/");
         }
+        successfullyLoaded = true;
         __quiz_name = questionnaire.title;
         __quiz_type = questionnaire.type;
         questionnaire.questions.forEach(question => questions.push(question));
@@ -70,11 +78,12 @@
   });
 
   onDestroy(async () => {
-    let shouldSave = !stateSaved
-      ? confirm(
-          "You have unsaved answers. Do you want to save them before exiting?"
-        )
-      : false;
+    let shouldSave =
+      !stateSaved && successfullyLoaded
+        ? confirm(
+            "You have unsaved answers. Do you want to save them before exiting?"
+          )
+        : false;
     if (shouldSave) await saveState();
   });
 
@@ -162,3 +171,22 @@
     </Card>
   </div>
 {/each}
+<div class="container">
+  <p class="mdc-typography--caption">
+    <span style="color: {stateSaved ? 'green' : 'red'}">
+      {#if stateSaved}
+        All changes have been saved successfully!
+      {:else}
+        Unsaved Changes (click the bookmark
+        <Button
+          on:click={() => {
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+          }}>
+          above
+        </Button>
+        to save)
+      {/if}
+    </span>
+  </p>
+</div>
