@@ -13,7 +13,7 @@ import ujson
 from app.utils.cas import get_cas
 from app.utils.token import verify_token
 from app.utils.mongodb import get_database
-from app.models.user import UserInResponse, StateInResponse
+from app.models.user import StateInResponse, Audit
 from app.models.questionnaire import QuestionnaireInResponse
 from config import SECRET_KEY
 
@@ -21,7 +21,8 @@ router = APIRouter()
 
 
 @router.get("/login", tags=["auth"])
-async def login_route(next: str = "/", ticket: str = None, cas_client: CASClient = Depends(get_cas), db: AsyncIOMotorClient = Depends(get_database)):
+async def login_route(next: str = "/", ticket: str = None, cas_client: CASClient = Depends(get_cas),
+                      db: AsyncIOMotorClient = Depends(get_database)):
     """login using CAS login
 
     """
@@ -43,23 +44,25 @@ async def login_route(next: str = "/", ticket: str = None, cas_client: CASClient
 
         existing = await db["core"]["users"].find_one({"username": username})
         if existing:
-            await db["core"]["users"].update_one({"username": username}, {"$set": {"last_login": attributes["authenticationDate"]}})
+            await db["core"]["users"].update_one({
+                "username": username}, {"$set": {"last_login": attributes["authenticationDate"]}})
         else:
             # add the initial state as unanswered
+            mappings = {}
             async for questionnaire in db["core"]["questions"].find():
-                questions = questionnaire["questions"]
-                options = questionnaire["options"]
-                _mapping = {
-                    str(question["_id"]): {
-                        str(option["_id"]): 1 for option in options
-                    } for question in questions
-                }
+                default = [option["_id"] for option in questionnaire["options"]
+                           if option["label"] == "Unattempted"][0]
+                mappings.update({
+                    str(questionnaire["_id"]): {
+                        str(question["_id"]): default for question in questionnaire["questions"]
+                    }
+                })
 
             _res = await db["core"]["users"].insert_one({
                 "username": username,
                 "last_login": attributes["authenticationDate"],
                 "first_login": attributes["authenticationDate"],
-                "state": _mapping
+                "state": mappings
             })
         jwt_token = jwt.encode({'username': username},
                                str(SECRET_KEY), algorithm="HS256").decode()
@@ -74,8 +77,10 @@ async def login_route(next: str = "/", ticket: str = None, cas_client: CASClient
         return RedirectResponse(url=redirect_url)
 
 
-@router.get("/questions/{questions_id}", response_model=QuestionnaireInResponse, dependencies=[Depends(verify_token)], tags=["questions"])
-async def get_questionnaire(questions_id: str, db: AsyncIOMotorClient = Depends(get_database)) -> QuestionnaireInResponse:
+@router.get("/questions/{questions_id}", response_model=QuestionnaireInResponse,
+            dependencies=[Depends(verify_token)], tags=["questions"])
+async def get_questionnaire(questions_id: str,
+                            db: AsyncIOMotorClient = Depends(get_database)) -> QuestionnaireInResponse:
     """
     Retrieve questionnaire given the `question_id`
 
@@ -95,7 +100,7 @@ async def get_questionnaire(questions_id: str, db: AsyncIOMotorClient = Depends(
             status_code=404, detail=f"Questionnaire {questions_id} not found!")
 
 
-@router.get("/state/{questions_id}", response_model=StateInResponse, tags=["user", "questions"])
+@router.get("/state/{questions_id}", response_model=StateInResponse, tags=["user", "questions", "state"])
 async def get_state(questions_id: str, token: dict = Depends(verify_token),
                     db: AsyncIOMotorClient = Depends(get_database)) -> StateInResponse:
     """
@@ -107,10 +112,33 @@ async def get_state(questions_id: str, token: dict = Depends(verify_token),
     """
     questionnaire = await db["core"]["questions"].find_one(
         {"_id": questions_id})
-    if questionnaire:
-        # TODO retrieve relevant state from user
-        questions = {}
-        return StateInResponse(questions=questions)
-    else:
+    questionnaire_id = questionnaire["_id"]
+    _user = await db["core"]["users"].find_one(token)
+    try:
+        question_state = _user["state"].get(questionnaire_id, {})
+        return StateInResponse(state=question_state)
+    except Exception as e:
         raise HTTPException(
-            status_code=404, detail=f"Questionnaire {questions_id} state not found for user!")
+            status_code=500, detail=f"Questionnaire {questions_id} state not loadable for user! | {e}")
+
+
+@router.post("/state/{questions_id}", tags=["user", "questions", "state"])
+async def set_state(questions_id: str, new_state: StateInResponse, token: dict = Depends(verify_token),
+                    db: AsyncIOMotorClient = Depends(get_database)):
+    """
+    Set the latest state and push update to audit log
+
+    :param questions_id: str -> ID of questionnaire
+    :param db: [AsyncIOMotorClient] -> async db connector
+    :returns has_saved: dict -> success/failure
+    """
+    try:
+        _res = await db["core"]["users"].update_one(token, {"$set": {
+            f"state.{questions_id}": new_state.state
+        }})
+        audit_entry = Audit(
+            username=token['username'], state=new_state.state, questionnaire_id=questions_id)
+        _audit_res = await db["core"]["audit"].insert_one(audit_entry.dict())
+        return {"success": True}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Progress not saved! {e}")

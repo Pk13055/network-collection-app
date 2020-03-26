@@ -27,7 +27,7 @@ module.exports = {
         commonjs(),
         postcss({
             extract: true,
-            minimize: isDEBUG,
+            minimize: !isDEBUG,
             use: [
                 ['sass', {
                     includePaths: [

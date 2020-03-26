@@ -51,9 +51,6 @@
     }
     replace("/");
   }
-  user.subscribe(resp => {
-    console.log(resp);
-  });
 </script>
 
 <style>

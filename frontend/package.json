@@ -13,7 +13,6 @@
   "devDependencies": {
     "@material/typography": "^3.1.0",
     "@smui/button": "^1.0.0-beta.20",
-    "@smui/top-app-bar": "^1.0.0-beta.20",
     "@smui/card": "^1.0.0-beta.20",
     "@smui/chips": "^1.0.0-beta.20",
     "@smui/data-table": "^1.0.0-beta.20",
@@ -22,8 +21,10 @@
     "@smui/list": "^1.0.0-beta.20",
     "@smui/paper": "^1.0.0-beta.20",
     "@smui/slider": "^1.0.0-beta.20",
+    "@smui/snackbar": "^1.0.0-beta.20",
     "@smui/tab": "^1.0.0-beta.20",
     "@smui/tab-bar": "^1.0.0-beta.20",
+    "@smui/top-app-bar": "^1.0.0-beta.20",
     "node-sass": "^4.13.1",
     "rollup-plugin-livereload": "^1.0.4",
     "rollup-plugin-serve": "^1.0.1",

@@ -12,7 +12,6 @@ async def verify_token(authorization: str = Header(None)):
     try:
         decoded_token = jwt.decode(
             authorization, str(SECRET_KEY), algorithms=["HS256"])
-        logging.debug(decoded_token)
         return decoded_token
     except Exception as e:
         raise HTTPException(
